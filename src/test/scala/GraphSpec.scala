@@ -3,6 +3,8 @@ package pharg
 import pharg.DSL._
 import collection.immutable.{ListSet, ListMap}
 
+import cats.Functor
+
 class GraphSpec extends org.specs2.mutable.Specification {
   // ListSet and LitsMap preserve the order and makes toString tests reliable
   def V(range: Range) = ListSet(range.reverse: _*)
@@ -49,7 +51,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
       e(1 -> 2).toSet mustEqual V(1, 2)
     }
     "map" >> {
-      e(1 -> 2).map(_ + 1) mustEqual e(2 -> 3)
+      Functor[Edge].map(e(1 -> 2))(_ + 1) mustEqual e(2 -> 3)
     }
   }
 

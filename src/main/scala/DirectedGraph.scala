@@ -1,9 +1,26 @@
 package pharg
 
 import scala.collection.mutable
+import cats.{Functor, Monoid}
 
 object DirectedGraph {
-  val empty = DirectedGraph[Nothing](Set.empty, Set.empty)
+  implicit val directedGraphFunctor: Functor[DirectedGraph] = new Functor[DirectedGraph] {
+    def map[A, B](fa: DirectedGraph[A])(f: A => B) = fa.copy(
+      vertices = fa.vertices map f,
+      edges = fa.edges map (Functor[Edge].map(_)(f))
+    )
+  }
+
+  implicit def monoidDirectedGraph[A]: Monoid[DirectedGraph[A]] =
+    new Monoid[DirectedGraph[A]] {
+      def combine(x: DirectedGraph[A], y: DirectedGraph[A]): DirectedGraph[A] = {
+        DirectedGraph(
+          x.vertices union y.vertices,
+          x.edges union y.edges
+        )
+      }
+      def empty: DirectedGraph[A] = DirectedGraph[A](Set.empty, Set.empty)
+    }
 }
 
 case class DirectedGraph[V](
@@ -180,7 +197,7 @@ trait DirectedGraphLike[V] {
     def recurse(perm: Map[V, V]): Boolean = {
       if (perm.size == this.vertices.size) {
         vertices.map(perm) == that.vertices &&
-          edges.map(_ map perm) == that.edges
+          edges.map(Functor[Edge].map(_)(perm)) == that.edges
       } else {
         val thisCandidates = thisLabels -- perm.keySet
         val thatCandidates = thatLabels -- perm.values

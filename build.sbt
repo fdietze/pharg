@@ -14,6 +14,7 @@ lazy val root = project.in(file(".")).
 lazy val pharg = (crossProject.crossType(CrossType.Pure) in file("."))
   .settings(
     libraryDependencies ++= (
+      "org.typelevel" %%% "cats" % "0.7.2" ::
       "org.specs2" %% "specs2-core" % "3.8.4" % "test" ::
       Nil
     ),
@@ -26,6 +27,8 @@ lazy val pharg = (crossProject.crossType(CrossType.Pure) in file("."))
     scalacOptions in Test += "-Xplugin-disable:scalaxy-streams",
     autoCompilerPlugins := true,
     addCompilerPlugin("com.nativelibs4java" %% "scalaxy-streams" % "0.3.4"),
+
+    //TODO: wartremover
 
     scalacOptions ++= (
       "-encoding" :: "UTF-8" ::
