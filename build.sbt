@@ -22,13 +22,18 @@ lazy val pharg = (crossProject.crossType(CrossType.Pure) in file("."))
     scalacOptions in Test ++= Seq("-Yrangepos"), // for Specs2
 
     // scalaxy (faster collection operations)
-    scalacOptions += "-Xplugin-require:scalaxy-streams",
-    scalacOptions in Test ~= (_ filterNot (_ == "-Xplugin-require:scalaxy-streams")),
-    scalacOptions in Test += "-Xplugin-disable:scalaxy-streams",
-    autoCompilerPlugins := true,
-    addCompilerPlugin("com.nativelibs4java" %% "scalaxy-streams" % "0.3.4"),
+    // scalacOptions += "-Xplugin-require:scalaxy-streams",
+    // scalacOptions in Test ~= (_ filterNot (_ == "-Xplugin-require:scalaxy-streams")),
+    // scalacOptions in Test += "-Xplugin-disable:scalaxy-streams",
+    // autoCompilerPlugins := true,
+    // addCompilerPlugin("com.nativelibs4java" %% "scalaxy-streams" % "0.3.4"),
 
     //TODO: wartremover
+
+    initialCommands in console := """
+    import pharg._
+    import pharg.DSL._
+    """,
 
     scalacOptions ++= (
       "-encoding" :: "UTF-8" ::
