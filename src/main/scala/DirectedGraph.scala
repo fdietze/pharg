@@ -81,6 +81,17 @@ trait DirectedGraphLike[V] {
     edges.filter(e => vp(e.in) && vp(e.out))
   }
 
+  def inducedSubGraph(vp: (V) => Boolean): DirectedGraph[V] = {
+    val subGraph = DirectedGraph(
+      vertices.filter(vp),
+      inducedEdges(vp)
+    )
+    assert(subGraph subGraphOf this)
+    subGraph
+  }
+
+  def filter(vp: (V) => Boolean): DirectedGraph[V] = inducedSubGraph(vp)
+
   def topologicalSort: List[V] = {
     assert(!hasCycle)
 
