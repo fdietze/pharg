@@ -31,10 +31,6 @@ class GenericGraphSpec extends org.specs2.mutable.Specification {
       Set(Edge(1, 2))
     )
     degree(g, 1) mustEqual 1
-    degree(g, 1) mustEqual 1
-    degree(g, 1) mustEqual 1
-    degree(g, 1) mustEqual 1
-    degree(g, 1) mustEqual 1
   }
 
   "Hypergraph" >> {
@@ -43,7 +39,7 @@ class GenericGraphSpec extends org.specs2.mutable.Specification {
   }
 
   "Generalized Hypergraph" >> {
-    val hg = GeneralizedHyperGraph(Set(1, 2, 3, 4), Map(2 -> Set(1, 3), 4 -> Set(1, 2)))
+    val hg = GeneralizedHyperGraph(Map(2 -> Set(1, 3), 4 -> Set(1, 2)))
     degree(hg, 2) mustEqual 1
   }
 }

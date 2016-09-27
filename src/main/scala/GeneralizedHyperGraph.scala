@@ -28,7 +28,7 @@ package generic {
 
   case class TypedGraph[A, E](vertices: Seq[A], edges: Seq[E])(implicit e: DirectedEdge[E, A])
 
-  case class GeneralizedHyperGraph[A](atoms: Set[A], incidence: Map[A, Set[A]])
+  case class GeneralizedHyperGraph[A](incidence: Map[A, Set[A]])
 
   trait Neighbours[G, A] {
     def neighbours(graph: G, atom: A): Set[A]
