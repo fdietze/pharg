@@ -1,4 +1,8 @@
 package pharg
+
+import shapeless._
+import shapeless.syntax._
+
 // requirements:
 // directed graph
 // undirected graph
@@ -16,19 +20,23 @@ package pharg
 
 package generic {
   case class Edge[A](in: A, out: A)
-  case class Graph[A](vertices: Set[A], edges: Set[Edge[A]])
-
   case class HyperEdge[A](incident: A*)
+
+  case class Graph[A](vertices: Set[A], edges: Set[Edge[A]])
   case class HyperGraph[A](vertices: Set[A], edges: Set[HyperEdge[A]])
+  case class GeneralizedHyperGraph[A](incidents: Map[A, Set[A]])
 
   trait DirectedEdge[E, A] {
     def in(edge: E): A
     def out(edge: E): A
   }
 
-  case class TypedGraph[A, E](vertices: Seq[A], edges: Seq[E])(implicit e: DirectedEdge[E, A])
+  trait DirectedHyperEdge[E, A] {
+    def incidents(edge: E): Seq[A]
+  }
 
-  case class GeneralizedHyperGraph[A](incidence: Map[A, Set[A]])
+  case class TypedGraph[A, E](vertices: Seq[A], edges: Seq[E])(implicit e: DirectedEdge[E, A])
+  case class GeneralizedTypedHyperGraph[A, M[K,V]](atoms:Set[A], incidents: HMap[M])
 
   trait Neighbours[G, A] {
     def neighbours(graph: G, atom: A): Set[A]
@@ -55,7 +63,11 @@ package object generic {
   }
 
   implicit def generalizedHyperGraphNeighbours[A]: Neighbours[GeneralizedHyperGraph[A], A] = new Neighbours[GeneralizedHyperGraph[A], A] {
-    def neighbours(graph: GeneralizedHyperGraph[A], atom: A) = (graph.incidence.values.filter(_ contains atom).flatten.toSet - atom)
+    def neighbours(graph: GeneralizedHyperGraph[A], atom: A) = (graph.incidents.values.filter(_ contains atom).flatten.toSet - atom)
+  }
+
+  implicit def generalizedTypedHyperGraphNeighbours[A, V <: HList, M[K,V]](implicit ev: M[A,V]): Neighbours[GeneralizedTypedHyperGraph[A, M], A] = new Neighbours[GeneralizedTypedHyperGraph[A, M], A] {
+    def neighbours(graph: GeneralizedTypedHyperGraph[A, M], atom: A) = graph.atoms.filter(a => graph.incidents.get(a).get.filter[A] contains atom)
   }
 
   // case class Graph(vertices: Set[Vertex], edges: Set[Edge])

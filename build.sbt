@@ -15,6 +15,7 @@ lazy val pharg = (crossProject.crossType(CrossType.Pure) in file("."))
   .settings(
     libraryDependencies ++= (
       "org.typelevel" %%% "cats" % "0.7.2" ::
+      "com.chuusai" %%% "shapeless" % "2.3.2" ::
       "org.specs2" %% "specs2-core" % "3.8.4" % "test" ::
       Nil
     ),
