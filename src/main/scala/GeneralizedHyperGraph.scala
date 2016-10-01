@@ -2,6 +2,7 @@ package pharg
 
 import shapeless._
 import shapeless.syntax._
+import cats._
 
 // requirements:
 // directed graph
@@ -36,7 +37,9 @@ package generic {
   }
 
   case class TypedGraph[A, E](vertices: Seq[A], edges: Seq[E])(implicit e: DirectedEdge[E, A])
-  case class GeneralizedTypedHyperGraph[A, M[K,V]](atoms:Set[A], incidents: HMap[M])
+  case class GeneralizedTypedHyperGraph[A, M[K, V]](atoms: Set[A], incidents: HMap[M])
+
+  case class GeneralizedGraph[A](atoms: Set[A])
 
   trait Neighbours[G, A] {
     def neighbours(graph: G, atom: A): Set[A]
@@ -46,6 +49,19 @@ package generic {
 package object generic {
 
   def degree[G, A](graph: G, atom: A)(implicit n: Neighbours[G, A]): Int = n.neighbours(graph, atom).size
+  // def map[G, A](graph: G, f: (A) => A)(implicit n: Neighbours[G, A]): Int = (graph.vertices map f), graph.edges map (_ map f)
+  // def filter[G, A](graph: G, atom: (A) => Boolean)(implicit n: Neighbours[G, A]): Int = n.neighbours(graph, atom).size
+
+  implicit val directedGraphFunctor: Functor[Graph] = new Functor[Graph] {
+    def map[A, B](fa: Graph[A])(f: A => B) = fa.copy(
+      vertices = fa.vertices map f,
+      edges = fa.edges map (Functor[Edge].map(_)(f))
+    )
+  }
+
+  implicit val directedEdgeFunctor: Functor[Edge] = new Functor[Edge] {
+    def map[A, B](fa: Edge[A])(f: A => B) = fa.copy(in = f(fa.in), out = f(fa.out))
+  }
 
   implicit def graphNeighbours[A]: Neighbours[Graph[A], A] = new Neighbours[Graph[A], A] {
     def neighbours(graph: Graph[A], atom: A) = graph.edges.filter(_.in == atom).map(_.out) ++ graph.edges.filter(_.out == atom).map(_.in)
@@ -66,9 +82,9 @@ package object generic {
     def neighbours(graph: GeneralizedHyperGraph[A], atom: A) = (graph.incidents.values.filter(_ contains atom).flatten.toSet - atom)
   }
 
-  implicit def generalizedTypedHyperGraphNeighbours[A, V <: HList, M[K,V]](implicit ev: M[A,V]): Neighbours[GeneralizedTypedHyperGraph[A, M], A] = new Neighbours[GeneralizedTypedHyperGraph[A, M], A] {
-    def neighbours(graph: GeneralizedTypedHyperGraph[A, M], atom: A) = graph.atoms.filter(a => graph.incidents.get(a).get.filter[A] contains atom)
-  }
+  // implicit def generalizedTypedHyperGraphNeighbours[A, V <: HList, M[K,V]](implicit ev: M[A,V]): Neighbours[GeneralizedTypedHyperGraph[A, M], A] = new Neighbours[GeneralizedTypedHyperGraph[A, M], A] {
+  //   def neighbours(graph: GeneralizedTypedHyperGraph[A, M], atom: A) = graph.atoms.filter(a => graph.incidents.get(a).get.filter[A] contains atom)
+  // }
 
   // case class Graph(vertices: Set[Vertex], edges: Set[Edge])
 
