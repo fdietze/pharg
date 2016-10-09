@@ -119,4 +119,38 @@ class GenericGraphSpec extends org.specs2.mutable.Specification {
     //   ) mustEqual Graph(Set(2, 3), Set(Edge(2, 3)))
     // }
   }
+
+  "ER Diagram" >> {
+    import generalized._
+
+    // sealed trait MyAtom
+    // sealed trait MyEdge extends MyAtom with pharg.directed.EdgeLike[MyAtom]
+    // case class Author(name: String) extends MyAtom
+    // case class Writes(in: Author, out: Post, date: Long) extends MyEdge
+
+    // sealed trait Respondee extends MyAtom
+    // case class Post(title: String) extends Respondee
+    // case class RespondsTo(in: Post, out: Respondee, date: Long) extends Respondee with MyEdge
+
+    // Selbst Die Schema Datenstruktur muss ein Hypergraph sein, um Kantenvererbung darzustellen
+    sealed trait Atom { def name: String; def properties: Map[String, String]; def inherits: Seq[Trait] }
+    sealed trait EntityLike extends Atom
+    sealed trait RelationshipLike extends Atom with pharg.directed.EdgeLike[Atom]
+
+    case class Trait(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends Atom
+    case class Entity(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends EntityLike
+    case class Relationship(in: EntityLike, name: String, out: EntityLike,
+      properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends RelationshipLike
+    case class HyperRelationship(in: EntityLike, name: String, out: EntityLike,
+      properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends EntityLike with RelationshipLike
+
+    val connectable = Trait("Connectable")
+    val post = Entity("Post", Map("title" -> "String"), inherits = Seq(connectable))
+    val user = Entity("User", Map("name" -> "String"))
+    val respondsTo = HyperRelationship(post, "RespondsTo", connectable, Map("name" -> "String"), inherits = Seq(connectable))
+    val authors = Relationship(user, "Authors", post)
+    Graph[Atom](Set(connectable, post, user, authors, respondsTo))
+
+    1 mustEqual 1
+  }
 }

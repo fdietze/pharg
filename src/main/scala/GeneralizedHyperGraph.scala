@@ -125,38 +125,6 @@ package object algorithm {
     // (:User)-[:Authors {date: Long}]->(:Post)
   }
 
-  // object SchemaERDiagram {
-  //   // Selbst Die Schema Datenstruktur muss ein Hypergraph sein, um Kantenvererbung darzustellen
-  //   sealed trait Entity {def name:String; def properties:Map[String, String], inherits: Seq[VertexTrait]}
-  //   sealed trait Relationship
-  //   sealed trait Trait extends Entity
-
-  //   case class VertexTrait(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[VertexTrait] = Nil) extends Trait
-  //   case class EdgeTrait(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[EdgeTrait] = Nil) extends Trait
-
-  //   case class Vertex(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[VertexTrait] = Nil) extends Entity
-  //   case class HyperEdge(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends Entity
-
-  //   case class Edge(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[EdgeTrait] = Nil) extends Relationship
-  //   case class HyperEdgeStart(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends Relationship
-  //   case class HyperEdgeEnd(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends Relationship
-  // }
-
-  // object SchemaDataStructure {
-  //   import SchemaERDiagram._
-
-  //   val connectable = Trait("Connectable")
-  //   Graph[Entity, Relationship](
-  //     Set(
-  //       Vertex("Post", Map("title" -> "String"), inherits = Seq(connectable)),
-  //       Vertex("User", Map("name" -> "String")),
-  //       HyperEdge("RespondsTo", Map("name" -> "String")),
-
-  //     )
-  //   )
-
-  // }
-
   // object Schema {
   //   sealed trait Node
   //   sealed trait Edge
