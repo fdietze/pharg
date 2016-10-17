@@ -4,6 +4,7 @@ import pharg.algorithm._
 import cats._
 
 // requirements:
+//
 // directed graph
 // undirected graph
 // with data on vertices / edges
@@ -15,6 +16,10 @@ import cats._
 // - Undirected Hyperedge: (incident:Set[V])
 // - Directed Hyperedge: (in:Set[V], out:Set[V])
 // - Directed Hyperedge: (incident:Seq[V], i: Interpretation[ich])
+//
+// Different Performance characteristics
+// - Fast modification
+// - Fast traversal and algorithms
 
 class GenericGraphSpec extends org.specs2.mutable.Specification {
   "directed.Graph" >> {
@@ -133,24 +138,32 @@ class GenericGraphSpec extends org.specs2.mutable.Specification {
     // case class RespondsTo(in: Post, out: Respondee, date: Long) extends Respondee with MyEdge
 
     // Selbst Die Schema Datenstruktur muss ein Hypergraph sein, um Kantenvererbung darzustellen
-    sealed trait Atom { def name: String; def properties: Map[String, String]; def inherits: Seq[Trait] }
+    sealed trait Atom { def name: String }
     sealed trait EntityLike extends Atom
-    sealed trait RelationshipLike extends Atom with pharg.directed.EdgeLike[Atom]
+    sealed trait RelationshipLike extends Atom
 
-    case class Trait(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends Atom
-    case class Entity(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends EntityLike
+    sealed trait TraitLike extends Atom
+    sealed trait EntityTraitLike extends EntityLike with TraitLike
+    sealed trait RelationshipTraitLike extends RelationshipLike with TraitLike
+
+    case class RelationshipTrait(name: String, inherits: Seq[RelationshipTraitLike] = Nil) extends RelationshipTraitLike
+    case class EntityTrait(name: String, inherits: Seq[EntityTraitLike] = Nil) extends EntityTraitLike
+    case class PropertyTrait(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[PropertyTrait] = Nil) extends RelationshipTraitLike with EntityTraitLike
+
+    case class Entity(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[EntityTraitLike] = Nil) extends EntityLike
     case class Relationship(in: EntityLike, name: String, out: EntityLike,
-      properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends RelationshipLike
+      properties: Map[String, String] = Map.empty, inherits: Seq[RelationshipTraitLike] = Nil) extends RelationshipLike with pharg.directed.EdgeLike[Atom]
     case class HyperRelationship(in: EntityLike, name: String, out: EntityLike,
-      properties: Map[String, String] = Map.empty, inherits: Seq[Trait] = Nil) extends EntityLike with RelationshipLike
+      properties: Map[String, String] = Map.empty, inherits: Seq[TraitLike] = Nil) extends EntityLike with RelationshipLike with pharg.directed.EdgeLike[Atom]
 
-    val connectable = Trait("Connectable")
+    val connectable = EntityTrait("Connectable")
     val post = Entity("Post", Map("title" -> "String"), inherits = Seq(connectable))
     val user = Entity("User", Map("name" -> "String"))
     val respondsTo = HyperRelationship(post, "RespondsTo", connectable, Map("name" -> "String"), inherits = Seq(connectable))
-    val authors = Relationship(user, "Authors", post)
-    Graph[Atom](Set(connectable, post, user, authors, respondsTo))
+    val contributes = RelationshipTrait("Contributes")
+    val authors = Relationship(user, "Authors", post, inherits = Seq(contributes))
+    val g = Graph[Atom](Set(connectable, post, user, authors, respondsTo))
 
-    1 mustEqual 1
+    degree[Graph[Atom], Atom](g, post) mustEqual 2
   }
 }
