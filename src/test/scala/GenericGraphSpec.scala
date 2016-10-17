@@ -16,6 +16,7 @@ import cats._
 // - Undirected Hyperedge: (incident:Set[V])
 // - Directed Hyperedge: (in:Set[V], out:Set[V])
 // - Directed Hyperedge: (incident:Seq[V], i: Interpretation[ich])
+// multigraphs
 //
 // Different Performance characteristics
 // - Fast modification
@@ -126,44 +127,48 @@ class GenericGraphSpec extends org.specs2.mutable.Specification {
   }
 
   "ER Diagram" >> {
-    import generalized._
+    // The ER Diagram needs to be a generalized graph to model relation inheritance.
+    // It is also a multigraph, because inheritance/relationship can connect the same vertices.
+    import generalized.multi._
 
-    // sealed trait MyAtom
-    // sealed trait MyEdge extends MyAtom with pharg.directed.EdgeLike[MyAtom]
-    // case class Author(name: String) extends MyAtom
-    // case class Writes(in: Author, out: Post, date: Long) extends MyEdge
-
-    // sealed trait Respondee extends MyAtom
-    // case class Post(title: String) extends Respondee
-    // case class RespondsTo(in: Post, out: Respondee, date: Long) extends Respondee with MyEdge
-
-    // Selbst Die Schema Datenstruktur muss ein Hypergraph sein, um Kantenvererbung darzustellen
-    sealed trait Atom { def name: String }
-    sealed trait EntityLike extends Atom
-    sealed trait RelationshipLike extends Atom
+    sealed trait Atom
+    sealed trait NamedAtom extends Atom { def name: String }
+    sealed trait EntityLike extends NamedAtom
+    sealed trait RelationshipLike extends NamedAtom
 
     sealed trait TraitLike extends Atom
     sealed trait EntityTraitLike extends EntityLike with TraitLike
     sealed trait RelationshipTraitLike extends RelationshipLike with TraitLike
 
-    case class RelationshipTrait(name: String, inherits: Seq[RelationshipTraitLike] = Nil) extends RelationshipTraitLike
-    case class EntityTrait(name: String, inherits: Seq[EntityTraitLike] = Nil) extends EntityTraitLike
-    case class PropertyTrait(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[PropertyTrait] = Nil) extends RelationshipTraitLike with EntityTraitLike
+    case class RelationshipTrait(name: String) extends RelationshipTraitLike
+    case class EntityTrait(name: String) extends EntityTraitLike
+    case class PropertyTrait(name: String, properties: Map[String, String] = Map.empty) extends RelationshipTraitLike with EntityTraitLike
 
-    case class Entity(name: String, properties: Map[String, String] = Map.empty, inherits: Seq[EntityTraitLike] = Nil) extends EntityLike
+    case class Entity(name: String, properties: Map[String, String] = Map.empty) extends EntityLike
     case class Relationship(in: EntityLike, name: String, out: EntityLike,
-      properties: Map[String, String] = Map.empty, inherits: Seq[RelationshipTraitLike] = Nil) extends RelationshipLike with pharg.directed.EdgeLike[Atom]
+      properties: Map[String, String] = Map.empty) extends RelationshipLike with pharg.directed.EdgeLike[Atom]
     case class HyperRelationship(in: EntityLike, name: String, out: EntityLike,
-      properties: Map[String, String] = Map.empty, inherits: Seq[TraitLike] = Nil) extends EntityLike with RelationshipLike with pharg.directed.EdgeLike[Atom]
+      properties: Map[String, String] = Map.empty) extends EntityLike with RelationshipLike with pharg.directed.EdgeLike[Atom]
+
+    sealed trait Inheritance extends Atom with pharg.directed.EdgeLike[Atom]
+    case class EntityInheritance(in: Entity, out: EntityTraitLike) extends Inheritance
+    case class EntityTraitInheritance(in: EntityTrait, out: EntityTraitLike) extends Inheritance
+    case class RelationshipInheritance(in: Relationship, out: RelationshipTraitLike) extends Inheritance
+    case class RelationshipTraitInheritance(in: RelationshipTrait, out: RelationshipTraitLike) extends Inheritance
+    case class HyperRelationshipInheritance(in: HyperRelationship, out: TraitLike) extends Inheritance
+    case class PropertyTraitInheritance(in: PropertyTrait, out: PropertyTrait) extends Inheritance
 
     val connectable = EntityTrait("Connectable")
-    val post = Entity("Post", Map("title" -> "String"), inherits = Seq(connectable))
+    val post = Entity("Post", Map("title" -> "String"))
+    val postIsConnectable = EntityInheritance(post, connectable)
     val user = Entity("User", Map("name" -> "String"))
-    val respondsTo = HyperRelationship(post, "RespondsTo", connectable, Map("name" -> "String"), inherits = Seq(connectable))
+    val respondsTo = HyperRelationship(post, "RespondsTo", connectable, Map("name" -> "String"))
+    val respondsToIsConnectable = HyperRelationshipInheritance(respondsTo, connectable)
     val contributes = RelationshipTrait("Contributes")
-    val authors = Relationship(user, "Authors", post, inherits = Seq(contributes))
-    val g = Graph[Atom](Set(connectable, post, user, authors, respondsTo))
+    val writes = Relationship(user, "Writes", post)
+    val writingIsContributing = RelationshipInheritance(writes, contributes)
+    val g = Graph[Atom](Seq(connectable, post, postIsConnectable, user, respondsTo, respondsToIsConnectable, contributes, writes, writingIsContributing))
 
-    degree[Graph[Atom], Atom](g, post) mustEqual 2
+    degree[Graph[Atom], Atom](g, post) mustEqual 3
   }
 }

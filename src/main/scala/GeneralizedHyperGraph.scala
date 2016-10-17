@@ -3,6 +3,7 @@ package pharg
 import shapeless._
 import shapeless.syntax._
 import cats._
+import collection.breakOut
 
 import algorithm.Neighbours
 
@@ -80,6 +81,19 @@ package typed {
 
 package generalized {
   case class Graph[A](atoms: Set[A])
+  package multi {
+    case class Graph[A](atoms: Seq[A])
+  }
+  package object multi {
+    implicit def graphNeighbours[A]: Neighbours[Graph[A], A] = new Neighbours[Graph[A], A] {
+      def neighbours(graph: Graph[A], atom: A): Iterable[A] = {
+        graph.atoms.collect {
+          case e: pharg.directed.EdgeLike[A] if e.in == atom => e.out
+          case e: pharg.directed.EdgeLike[A] if e.out == atom => e.in
+        }
+      }
+    }
+  }
 }
 package object generalized {
   implicit def graphNeighbours[A]: Neighbours[Graph[A], A] = new Neighbours[Graph[A], A] {
@@ -100,6 +114,7 @@ package algorithm {
 
 package object algorithm {
 
+  def neighbours[G, A](graph: G, atom: A)(implicit n: Neighbours[G, A]): Iterable[A] = n.neighbours(graph, atom)
   def degree[G, A](graph: G, atom: A)(implicit n: Neighbours[G, A]): Int = n.neighbours(graph, atom).size
   // def map[G, A](graph: G, f: (A) => A)(implicit n: Neighbours[G, A]): Int = (graph.vertices map f), graph.edges map (_ map f)
   // def filter[G, A](graph: G, atom: (A) => Boolean)(implicit n: Neighbours[G, A]): Int = n.neighbours(graph, atom).size
