@@ -138,6 +138,10 @@ trait DirectedGraphLike[V] {
     }
   }
 
+  def reachable(a: V, b: V): Boolean = depthFirstSearch(a, neighbours) contains b
+
+  def isPlanar: Boolean = ??? // TODO: http://bkocay.cs.umanitoba.ca/G&G/articles/Planarity.pdf
+
   def isEmpty = vertices.isEmpty
 
   def subGraphOf(superGraph: DirectedGraphLike[V]) = {
