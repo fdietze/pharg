@@ -34,13 +34,16 @@ trait DirectedGraphLike[V] {
   def vertices: Set[V]
   def edges: Set[E]
 
+  def n = vertices.size
+  def m = edges.size
+
   assert(edges.flatMap(e => List(e.in, e.out)) subsetOf vertices, "Edges can only connect existing vertices")
 
   def isolatedVertices = vertices.filter(degree(_) == 0)
   def inDegree(v: V) = predecessors(v).size
   def outDegree(v: V) = successors(v).size
   def degree(v: V) = inDegree(v) + outDegree(v)
-  def numElements = vertices.size + edges.size
+  def numElements = n + m
 
   // lazy caching datastructure for successors, predecessors, incomingEdges, outgoingEdges
   private def MapVVempty = Map.empty[V, Set[V]].withDefault((v: V) => { assert(vertices contains v); Set.empty[V] })
@@ -140,7 +143,7 @@ trait DirectedGraphLike[V] {
 
   def reachable(a: V, b: V): Boolean = depthFirstSearch(a, neighbours) contains b
 
-  def isPlanar: Boolean = ??? // TODO: http://bkocay.cs.umanitoba.ca/G&G/articles/Planarity.pdf
+  def isPlanar: Boolean = m <= (3 * n - 5) // TODO: http://bkocay.cs.umanitoba.ca/G&G/articles/Planarity.pdf
 
   def isEmpty = vertices.isEmpty
 
@@ -150,10 +153,7 @@ trait DirectedGraphLike[V] {
   }
 
   //TODO: rename? undirected case with n*(n-1)/2?
-  def isComplete = {
-    val n = vertices.size
-    edges.size == n * (n - 1)
-  }
+  def isComplete = m == n * (n - 1)
 
   def connectedComponents: Set[Set[V]] = connectedComponents(neighbours)
   def connectedComponents(neighbourSelector: V => Iterable[V]): Set[Set[V]] = {
@@ -169,7 +169,7 @@ trait DirectedGraphLike[V] {
   }
 
   //TODO: optimization: isComplete || depthFirst...
-  def isConnected = isEmpty || depthFirstSearch(vertices.head, neighbours).size == vertices.size
+  def isConnected = isEmpty || depthFirstSearch(vertices.head, neighbours).size == n
 
   def hasCycle: Boolean = {
     //TODO: optimization: use linear time algorithm
@@ -191,11 +191,11 @@ trait DirectedGraphLike[V] {
   }
 
   def isIsomorphicTo(that: DirectedGraphLike[V]): Boolean = {
-    if (this.vertices.size != that.vertices.size) return false
-    if (this.edges.size != that.edges.size) return false
+    if (this.n != that.n) return false
+    if (this.m != that.m) return false
     if (this.vertices.toList.map(this.degree).sorted != that.vertices.toList.map(that.degree).sorted) return false
 
-    if (this.vertices.size > 20) println(s"Isomorphism testing on Graph with ${this.vertices.size} vertices...")
+    if (this.n > 20) println(s"Isomorphism testing on Graph with ${this.n} vertices...")
 
     val thisLabels = this.vertices
     val thatLabels = that.vertices
@@ -210,7 +210,7 @@ trait DirectedGraphLike[V] {
     }
 
     def recurse(perm: Map[V, V]): Boolean = {
-      if (perm.size == this.vertices.size) {
+      if (perm.size == this.n) {
         vertices.map(perm) == that.vertices &&
           edges.map(Functor[Edge].map(_)(perm)) == that.edges
       } else {

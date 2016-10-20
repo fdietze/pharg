@@ -3,6 +3,7 @@ package pharg
 // directed graph
 // undirected graph
 // with data on vertices / edges
+// - special case for metrics
 // with specific vertex types
 // with specific edges types, connecting specific vertex types
 // edges connecting other edges or vertices
@@ -12,6 +13,7 @@ package pharg
 // - Directed Hyperedge: (in:Set[V], out:Set[V])
 // - Directed Hyperedge: (incident:Seq[V], i: Interpretation[ich])
 //
+// planar graphs?
 //
 
 package generic {
