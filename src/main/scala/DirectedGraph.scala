@@ -37,7 +37,7 @@ trait DirectedGraphLike[V] {
   def n = vertices.size
   def m = edges.size
 
-  assert(edges.flatMap(e => List(e.in, e.out)) subsetOf vertices, "Edges can only connect existing vertices")
+  // assert(edges.flatMap(e => List(e.in, e.out)) subsetOf vertices, "Edges can only connect existing vertices")
 
   def isolatedVertices = vertices.filter(degree(_) == 0)
   def inDegree(v: V) = predecessors(v).size
@@ -46,8 +46,8 @@ trait DirectedGraphLike[V] {
   def numElements = n + m
 
   // lazy caching datastructure for successors, predecessors, incomingEdges, outgoingEdges
-  private def MapVVempty = Map.empty[V, Set[V]].withDefault((v: V) => { assert(vertices contains v); Set.empty[V] })
-  private def MapVEempty = Map.empty[V, Set[E]].withDefault((v: V) => { assert(vertices contains v); Set.empty[E] })
+  private def MapVVempty = Map.empty[V, Set[V]].withDefault((v: V) => { /*assert(vertices contains v);*/ Set.empty[V] })
+  private def MapVEempty = Map.empty[V, Set[E]].withDefault((v: V) => { /*assert(vertices contains v);*/ Set.empty[E] })
 
   lazy val successors: Map[V, Set[V]] = edges.foldLeft(MapVVempty) { case (suc, E(in, out)) => suc + (in -> (suc(in) + out)) }
   lazy val predecessors: Map[V, Set[V]] = edges.foldLeft(MapVVempty) { case (pre, E(in, out)) => pre + (out -> (pre(out) + in)) }
@@ -59,7 +59,7 @@ trait DirectedGraphLike[V] {
   // def incomingEdges(v: V) = { assert(vertices contains v); edges.filter(_.out == v) }
 
   def neighbours(v: V): Set[V] = {
-    assert(vertices contains v)
+    // assert(vertices contains v)
     edges.collect {
       case E(`v`, out) => out
       case E(in, `v`) => in
@@ -72,7 +72,7 @@ trait DirectedGraphLike[V] {
   }
 
   def incidentEdges(v: V): Set[E] = {
-    assert(vertices contains v)
+    // assert(vertices contains v)
     edges.filter(_ contains v)
   }
 
@@ -89,14 +89,14 @@ trait DirectedGraphLike[V] {
       vertices.filter(vp),
       inducedEdges(vp)
     )
-    assert(subGraph subGraphOf this)
+    // assert(subGraph subGraphOf this)
     subGraph
   }
 
   def filter(vp: (V) => Boolean): DirectedGraph[V] = inducedSubGraph(vp)
 
   def topologicalSort: List[V] = {
-    assert(!hasCycle)
+    // assert(!hasCycle)
 
     var sorted: List[V] = Nil
     val unmarked = mutable.HashSet.empty[V] ++ vertices
@@ -118,7 +118,7 @@ trait DirectedGraphLike[V] {
   }
 
   def depthFirstSearch(start: V, continue: V => Iterable[V] = successors) = new Iterator[V] {
-    assert(vertices contains start)
+    // assert(vertices contains start)
 
     val stack = mutable.Stack(start)
     val onStack = mutable.Set[V]()
