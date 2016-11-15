@@ -2,7 +2,9 @@ organization in ThisBuild := "com.github.fdietze"
 name in ThisBuild := "pharg"
 version in ThisBuild := "0.1.0-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.11.8"
+scalaVersion in ThisBuild := "2.12.0"
+
+crossScalaVersions in ThisBuild := Seq("2.10.6","2.11.8", "2.12.0")
 
 lazy val root = project.in(file(".")).
   aggregate(phargJS, phargJVM).
@@ -14,8 +16,8 @@ lazy val root = project.in(file(".")).
 lazy val pharg = (crossProject.crossType(CrossType.Pure) in file("."))
   .settings(
     libraryDependencies ++= (
-      "org.typelevel" %%% "cats" % "0.7.2" ::
-      "org.specs2" %% "specs2-core" % "3.8.4" % "test" ::
+      "org.specs2" %% "specs2-core" % "3.8.6" % "test" ::
+      "org.typelevel" %%% "cats" % "0.8.1" ::
       Nil
     ),
 
@@ -42,8 +44,8 @@ lazy val pharg = (crossProject.crossType(CrossType.Pure) in file("."))
       "-explaintypes" ::
       "-feature" ::
       "-language:_" ::
-      "-Xlint:_" ::
-      "-Ywarn-unused" ::
+      // "-Xlint:_" ::
+      // "-Ywarn-unused" ::
       // "-Xdisable-assertions" ::
       // "-optimize" ::
       // "-Yopt:_" :: // enables all 2.12 optimizations
