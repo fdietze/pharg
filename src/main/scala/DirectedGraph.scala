@@ -156,12 +156,13 @@ trait DirectedGraphLike[V] {
   def isComplete = m == n * (n - 1)
 
   def connectedComponents: Set[Set[V]] = connectedComponents(neighbours)
-  def connectedComponents(neighbourSelector: V => Iterable[V]): Set[Set[V]] = {
+  def stronglyConnectedComponents: Set[Set[V]] = connectedComponents(successors)
+  def connectedComponents(continue: V => Iterable[V]): Set[Set[V]] = {
     val toVisit = mutable.HashSet.empty ++ vertices
     val components = mutable.HashSet.empty[Set[V]]
     while (toVisit.nonEmpty) {
       val start = toVisit.head
-      val component = depthFirstSearch(start, neighbourSelector).toSet
+      val component = depthFirstSearch(start, continue).toSet
       components += component
       toVisit --= component
     }
