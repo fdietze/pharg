@@ -39,9 +39,9 @@ class GraphSpec extends org.specs2.mutable.Specification {
     "toString" >> {
       e(2 -> 3).toString mustEqual "2 -> 3"
     }
-    "disallow self loops" >> {
-      e(1 -> 1) must throwAn[AssertionError]
-    }
+    // "disallow self loops" >> {
+    //   e(1 -> 1) must throwAn[AssertionError]
+    // }
     "contains vertex" >> {
       (e(2 -> 3) contains 1) must beFalse
       (e(2 -> 3) contains 2) must beTrue
@@ -81,19 +81,19 @@ class GraphSpec extends org.specs2.mutable.Specification {
       g.mapVertices(_ + 1) mustEqual G(V(1 to 4), E(1 -> 2, 2 -> 3, 3 -> 4), vData(1 -> "friedrich", 4 -> "friedhelm"), eData((1 -> 2) -> 0, (3 -> 4) -> 1))
     }
 
-    "assertions" >> {
-      "edges can only connect existing vertices" >> {
-        G(V(1), E(1 -> 2)) must throwAn[AssertionError]
-        G(V(2), E(1 -> 2)) must throwAn[AssertionError]
-      }
-      "vertex data can only be attached to existing vertices" >> {
-        G(V(), vd = vData(1 -> 5)) must throwAn[AssertionError]
-      }
-      "edge data can only be attached to existing edges" >> {
-        G(V(1, 2), ed = eData((1 -> 2) -> 5)) must throwAn[AssertionError]
-        G(V(), ed = eData((1 -> 2) -> 5)) must throwAn[AssertionError]
-      }
-    }
+    // "assertions" >> {
+    //   "edges can only connect existing vertices" >> {
+    //     G(V(1), E(1 -> 2)) must throwAn[AssertionError]
+    //     G(V(2), E(1 -> 2)) must throwAn[AssertionError]
+    //   }
+    //   "vertex data can only be attached to existing vertices" >> {
+    //     G(V(), vd = vData(1 -> 5)) must throwAn[AssertionError]
+    //   }
+    //   "edge data can only be attached to existing edges" >> {
+    //     G(V(1, 2), ed = eData((1 -> 2) -> 5)) must throwAn[AssertionError]
+    //     G(V(), ed = eData((1 -> 2) -> 5)) must throwAn[AssertionError]
+    //   }
+    // }
 
     "subGraphOf" >> {
       (G() subGraphOf G()) must beTrue
@@ -124,7 +124,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
         g.successors(4) mustEqual V()
         g.successors(5) mustEqual V(3)
         g.successors(6) mustEqual V()
-        g.successors(7) must throwAn[AssertionError]
+        // g.successors(7) must throwAn[AssertionError]
       }
 
       "predecessors" >> {
@@ -135,7 +135,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
         g.predecessors(4) mustEqual V(2)
         g.predecessors(5) mustEqual V(3)
         g.predecessors(6) mustEqual V()
-        g.predecessors(7) must throwAn[AssertionError]
+        // g.predecessors(7) must throwAn[AssertionError]
       }
 
       "incoming edges" >> {
@@ -146,7 +146,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
         g.incomingEdges(4) mustEqual E(2 -> 4)
         g.incomingEdges(5) mustEqual E(3 -> 5)
         g.incomingEdges(6) mustEqual E()
-        g.incomingEdges(7) must throwAn[AssertionError]
+        // g.incomingEdges(7) must throwAn[AssertionError]
       }
 
       "outgoing edges" >> {
@@ -157,7 +157,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
         g.outgoingEdges(4) mustEqual E()
         g.outgoingEdges(5) mustEqual E(5 -> 3)
         g.outgoingEdges(6) mustEqual E()
-        g.outgoingEdges(7) must throwAn[AssertionError]
+        // g.outgoingEdges(7) must throwAn[AssertionError]
       }
 
       "neighbours" >> {
@@ -169,7 +169,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
           g.neighbours(4) mustEqual V(2)
           g.neighbours(5) mustEqual V(3)
           g.neighbours(6) mustEqual V()
-          g.neighbours(7) must throwAn[AssertionError]
+          // g.neighbours(7) must throwAn[AssertionError]
         }
 
         "over edges form multiple vertices" >> {
@@ -198,7 +198,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
           g.incidentEdges(4) mustEqual E(2 -> 4)
           g.incidentEdges(5) mustEqual E(3 -> 5, 5 -> 3)
           g.incidentEdges(6) mustEqual E()
-          g.incidentEdges(7) must throwAn[AssertionError]
+          // g.incidentEdges(7) must throwAn[AssertionError]
 
         }
         "multiple vertices" >> {
@@ -256,7 +256,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
         g.inDegree(4) mustEqual 1
         g.inDegree(5) mustEqual 1
         g.inDegree(6) mustEqual 0
-        g.inDegree(7) must throwAn[AssertionError]
+        // g.inDegree(7) must throwAn[AssertionError]
       }
       "outDegree" >> {
         g.outDegree(0) mustEqual 0
@@ -266,7 +266,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
         g.outDegree(4) mustEqual 0
         g.outDegree(5) mustEqual 1
         g.outDegree(6) mustEqual 0
-        g.outDegree(7) must throwAn[AssertionError]
+        // g.outDegree(7) must throwAn[AssertionError]
       }
       "degree" >> {
         g.degree(0) mustEqual 1
@@ -276,7 +276,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
         g.degree(4) mustEqual 1
         g.degree(5) mustEqual 2
         g.degree(6) mustEqual 0
-        g.degree(7) must throwAn[AssertionError]
+        // g.degree(7) must throwAn[AssertionError]
       }
 
       "isComplete" >> {
@@ -305,18 +305,18 @@ class GraphSpec extends org.specs2.mutable.Specification {
 
     "modifications" >> {
       "add vertex" >> {
-        "existing" >> {
-          G(V(0 to 2)) + 1 must throwAn[AssertionError]
-        }
+        // "existing" >> {
+        //   G(V(0 to 2)) + 1 must throwAn[AssertionError]
+        // }
         "nonexisting" >> {
           G(V(0 to 2)) + 3 mustEqual G(V(0 to 3))
         }
       }
 
       "add edge" >> {
-        "existing" >> {
-          G(V(0 to 2), E(1 -> 2)) + e(1 -> 2) must throwAn[AssertionError]
-        }
+        // "existing" >> {
+        //   G(V(0 to 2), E(1 -> 2)) + e(1 -> 2) must throwAn[AssertionError]
+        // }
         "nonexisting" >> {
           G(V(0 to 2), E(1 -> 2)) + e(0 -> 2) mustEqual G(V(0 to 2), E(1 -> 2, 0 -> 2))
         }
@@ -330,12 +330,12 @@ class GraphSpec extends org.specs2.mutable.Specification {
       )
 
       "remove vertex" >> {
-        "from empty graph" >> {
-          G() - 1 must throwA[AssertionError]
-        }
-        "nonexisting vertex" >> {
-          g - 17 must throwA[AssertionError]
-        }
+        // "from empty graph" >> {
+        //   G() - 1 must throwA[AssertionError]
+        // }
+        // "nonexisting vertex" >> {
+        //   g - 17 must throwA[AssertionError]
+        // }
         "existing vertex with edges and vertexData" >> {
           g - 4 mustEqual G(
             V(0 to 3),
@@ -356,12 +356,12 @@ class GraphSpec extends org.specs2.mutable.Specification {
       }
 
       "remove edge" >> {
-        "from empty graph" >> {
-          G[Int, Nothing, Nothing]() - e(1 -> 2) must throwA[AssertionError]
-        }
-        "nonexisting edge" >> {
-          g - e(2 -> 4) must throwA[AssertionError]
-        }
+        // "from empty graph" >> {
+        //   G[Int, Nothing, Nothing]() - e(1 -> 2) must throwA[AssertionError]
+        // }
+        // "nonexisting edge" >> {
+        //   g - e(2 -> 4) must throwA[AssertionError]
+        // }
 
         "existing edge" >> {
           g - e(4 -> 2) mustEqual G(
@@ -401,9 +401,9 @@ class GraphSpec extends org.specs2.mutable.Specification {
       }
 
       "remove subgraph" >> {
-        "assertions" >> {
-          g -- G(V(0 to 17)) must throwAn[AssertionError]
-        }
+        // "assertions" >> {
+        //   g -- G(V(0 to 17)) must throwAn[AssertionError]
+        // }
         "full example" >> {
           val g = G[Int, Nothing, Nothing](
             V(0 to 4),
@@ -445,9 +445,9 @@ class GraphSpec extends org.specs2.mutable.Specification {
     }
 
     "depth first search" >> {
-      "nonexistent vertex" >> {
-        G().depthFirstSearch(17).toList must throwAn[AssertionError]
-      }
+      // "nonexistent vertex" >> {
+      //   G().depthFirstSearch(17).toList must throwAn[AssertionError]
+      // }
       "one vertex" >> {
         val g = G(V(0 to 0))
         g.depthFirstSearch(0).toList mustEqual List(0)
@@ -467,7 +467,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
       G(V(), E()).topologicalSort mustEqual List()
       G(V(1), E()).topologicalSort mustEqual List(1)
       G(V(1, 2), E(1 -> 2)).topologicalSort mustEqual List(1, 2)
-      G(V(1, 2), E(1 -> 2, 2 -> 1)).topologicalSort must throwAn[AssertionError]
+      // G(V(1, 2), E(1 -> 2, 2 -> 1)).topologicalSort must throwAn[AssertionError]
       G(V(1, 2, 3), E(2 -> 3, 1 -> 2)).topologicalSort mustEqual List(1, 2, 3)
       val s = G(V(1, 2, 3, 4, 5), E(1 -> 3, 2 -> 3, 3 -> 4, 3 -> 5)).topologicalSort
       List(s.slice(0, 2).toSet, s(2), s.slice(3, 5).toSet) mustEqual List(V(1, 2), 3, V(4, 5))
