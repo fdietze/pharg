@@ -7,10 +7,11 @@ import cats.Functor
 
 class GraphSpec extends org.specs2.mutable.Specification {
   // ListSet and LitsMap preserve the order and makes toString tests reliable
-  def V(range: Range) = ListSet(range.reverse: _*)
-  def V[Vertex](vs: Vertex*) = ListSet(vs.reverse: _*)
+  // note: ListSet in Scala 2.11 and 2.12 have a reversed order
+  def V(range: Range) = ListSet(range: _*)
+  def V[Vertex](vs: Vertex*) = ListSet(vs: _*)
   def e[Vertex](edge: (Vertex, Vertex)) = edge match { case (in, out) => Edge(in, out) }
-  def E[Vertex](es: (Vertex, Vertex)*) = ListSet(es.reverse.map { case (in, out) => Edge(in, out) }: _*)
+  def E[Vertex](es: (Vertex, Vertex)*) = ListSet(es.map { case (in, out) => Edge(in, out) }: _*)
   def vData[Vertex, VD](data: (Vertex, VD)*) = ListMap(data.map { case (v, datum) => v -> datum }: _*)
   def eData[Vertex, ED](data: ((Vertex, Vertex), ED)*) = ListMap(data.map { case ((a, b), datum) => e(a -> b) -> datum }: _*)
 
