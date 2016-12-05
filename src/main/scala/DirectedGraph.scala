@@ -53,22 +53,27 @@ trait DirectedGraphLike[V] {
   lazy val predecessors: Map[V, Set[V]] = edges.foldLeft(MapVVempty) { case (pre, E(in, out)) => pre + (out -> (pre(out) + in)) }
   lazy val incomingEdges: Map[V, Set[E]] = edges.foldLeft(MapVEempty) { case (incoming, edge @ E(_, out)) => incoming + (out -> (incoming(out) + edge)) }
   lazy val outgoingEdges: Map[V, Set[E]] = edges.foldLeft(MapVEempty) { case (outgoing, edge @ E(in, _)) => outgoing + (in -> (outgoing(in) + edge)) }
+  // lazy val neighbours: Map[V, Set[V]] = successors.foldLeft(predecessors) { case (nei, (v, suc)) => nei + (v -> (nei(v) ++ suc)) }
+  lazy val neighbours: Map[V, Set[V]] = edges.foldLeft(MapVVempty) {
+    case (nei, E(in, out)) =>
+      nei + (in -> (nei(in) + out)) + ((out -> (nei(out) + in)))
+  }
   // def successors(v: V) = { assert(vertices contains v); edges.collect { case E(`v`, out) => out } }
   // def predecessors(v: V) = { assert(vertices contains v); edges.collect { case E(in, `v`) => in } }
   // def outgoingEdges(v: V) = { assert(vertices contains v); edges.filter(_.in == v) }
   // def incomingEdges(v: V) = { assert(vertices contains v); edges.filter(_.out == v) }
 
-  def neighbours(v: V): Set[V] = {
-    // assert(vertices contains v)
-    edges.collect {
-      case E(`v`, out) => out
-      case E(in, `v`) => in
-    }
-  }
+  // def neighbours(v: V): Set[V] = {
+  //   // assert(vertices contains v)
+  //   edges.collect {
+  //     case E(`v`, out) => out
+  //     case E(in, `v`) => in
+  //   }
+  // }
 
   // open neighbourhood
   def neighbours(vp: (V) => Boolean): Set[V] = {
-    vertices.filter(vp).flatMap(neighbours).filterNot(vp)
+    vertices.filter(vp).flatMap(v => neighbours(v).filterNot(vp))
   }
 
   def incidentEdges(v: V): Set[E] = {
