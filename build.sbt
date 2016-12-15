@@ -2,9 +2,9 @@ organization in ThisBuild := "com.github.fdietze"
 name in ThisBuild := "pharg"
 version in ThisBuild := "0.1.0-SNAPSHOT"
 
-scalaVersion in ThisBuild := "2.12.0"
+scalaVersion in ThisBuild := "2.12.1"
 
-crossScalaVersions in ThisBuild := Seq("2.10.6", "2.11.8", "2.12.0")
+crossScalaVersions in ThisBuild := Seq("2.10.6", "2.11.8", "2.12.1")
 
 lazy val root = project.in(file(".")).
   aggregate(phargJS, phargJVM).
