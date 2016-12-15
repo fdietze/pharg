@@ -13,21 +13,21 @@ case class DirectedGraphData[V, +VD, +ED](
   edgeData: Map[Edge[V], ED]
 ) extends DirectedGraphLike[V] {
 
-  assert(vertexData.keys.toSet.diff(vertices).isEmpty, "V data can only be attached to existing vertices")
-  assert(edgeData.keys.toSet.diff(edges).isEmpty, "E data can only be attached to existing edges")
+  // assert(vertexData.keys.toSet.diff(vertices).isEmpty, "V data can only be attached to existing vertices")
+  // assert(edgeData.keys.toSet.diff(edges).isEmpty, "E data can only be attached to existing edges")
 
   def +(v: V) = {
-    assert(!(vertices contains v), s"V $v already exists in $vertices")
+    // assert(!(vertices contains v), s"V $v already exists in $vertices")
     copy(vertices = vertices + v)
   }
 
   def +(e: E) = {
-    assert(!(edges contains e), s"E $e already exists in $edges")
+    // assert(!(edges contains e), s"E $e already exists in $edges")
     copy(edges = edges + e)
   }
 
   def -(v: V) = {
-    assert(vertices contains v, s"V $v does not exist in $vertices")
+    // assert(vertices contains v, s"V $v does not exist in $vertices")
 
     val (removedEdges, retainedEdges) = edges.partition(_ contains v)
     DirectedGraphData(
@@ -39,7 +39,7 @@ case class DirectedGraphData[V, +VD, +ED](
   }
 
   def -(e: E) = {
-    assert(edges contains e, s"E $e does not exist in $edges")
+    // assert(edges contains e, s"E $e does not exist in $edges")
     copy(edges = edges - e, edgeData = edgeData - e)
   }
 
@@ -64,7 +64,7 @@ case class DirectedGraphData[V, +VD, +ED](
   }
 
   def --[ED1, VD1](subGraph: DirectedGraphData[V, ED1, VD1]) = {
-    assert(subGraph subGraphOf this, s"Graph can only remove valid subgraph. $this -- $subGraph)")
+    // assert(subGraph subGraphOf this, s"Graph can only remove valid subgraph. $this -- $subGraph)")
     val removedVertices = subGraph.vertices
     val removedEdges = subGraph.edges ++ incidentEdges(subGraph.vertices)
 

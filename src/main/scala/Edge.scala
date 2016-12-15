@@ -3,7 +3,7 @@ package pharg
 import cats.Functor
 
 case class Edge[+Vertex](in: Vertex, out: Vertex) {
-  assert(in != out, "Self loops are not allowed")
+  // assert(in != out, "Self loops are not allowed")
 
   def contains[V >: Vertex](v: V) = in == v || out == v
   def toSet[V >: Vertex]: Set[V] = Set(in, out)
