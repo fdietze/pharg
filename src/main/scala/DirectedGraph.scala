@@ -2,12 +2,13 @@ package pharg
 
 import scala.collection.mutable
 import cats.{Functor, Monoid}
+import cats.syntax.functor._
 
 object DirectedGraph {
   implicit val directedGraphFunctor: Functor[DirectedGraph] = new Functor[DirectedGraph] {
     def map[A, B](fa: DirectedGraph[A])(f: A => B) = fa.copy(
       vertices = fa.vertices map f,
-      edges = fa.edges map (Functor[Edge].map(_)(f))
+      edges = fa.edges map (_ map f)
     )
   }
 
@@ -218,7 +219,7 @@ trait DirectedGraphLike[V] {
     def recurse(perm: Map[V, V]): Boolean = {
       if (perm.size == this.n) {
         vertices.map(perm) == that.vertices &&
-          edges.map(Functor[Edge].map(_)(perm)) == that.edges
+          edges.map(_ map perm) == that.edges
       } else {
         val thisCandidates = thisLabels -- perm.keySet
         val thatCandidates = thatLabels -- perm.values

@@ -1,6 +1,6 @@
 package pharg
 
-import cats.Functor
+import cats.syntax.functor._
 
 object DirectedGraphData {
   val empty = DirectedGraphData[Nothing, Nothing, Nothing](Set.empty, Set.empty, Map.empty, Map.empty)
@@ -98,9 +98,9 @@ case class DirectedGraphData[V, +VD, +ED](
   def mapVertices(m: V => V): DirectedGraphData[V, VD, ED] = {
     DirectedGraphData(
       vertices map m,
-      edges map (Functor[Edge].map(_)(m)),
+      edges map (_ map m),
       vertexData map { case (v, d) => m(v) -> d },
-      edgeData map { case (e, d) => (Functor[Edge].map(e)(m)) -> d }
+      edgeData map { case (e, d) => (e map m) -> d }
     )
   }
 

@@ -3,7 +3,7 @@ package pharg
 import pharg.DSL._
 import collection.immutable.{ListSet, ListMap}
 
-import cats.Functor
+import cats.syntax.functor._
 
 class GraphSpec extends org.specs2.mutable.Specification {
   // ListSet and LitsMap preserve the order and makes toString tests reliable
@@ -52,7 +52,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
       e(1 -> 2).toSet mustEqual V(1, 2)
     }
     "map" >> {
-      Functor[Edge].map(e(1 -> 2))(_ + 1) mustEqual e(2 -> 3)
+      e(1 -> 2) map (_ + 1) mustEqual e(2 -> 3)
     }
   }
 
