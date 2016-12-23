@@ -43,18 +43,17 @@ case class DirectedGraphData[V, +VD, +ED](
     copy(edges = edges - e, edgeData = edgeData - e)
   }
 
-  // TODO:
-  // override def inducedSubGraph(vp: (V) => Boolean): DirectedGraphData[V, VD, ED] = {
-  //   val selectedEdges = inducedEdges(vp)
-  //   val subGraph = DirectedGraphData(
-  //     vertices.filter(vp),
-  //     selectedEdges,
-  //     vertexData filterKeys vp,
-  //     edgeData filterKeys selectedEdges
-  //   )
-  //   assert(subGraph subGraphOf this)
-  //   subGraph
-  // }
+  def inducedSubGraphData(vp: (V) => Boolean): DirectedGraphData[V, VD, ED] = {
+    val selectedEdges = inducedEdges(vp)
+    val subGraph = DirectedGraphData(
+      vertices.filter(vp),
+      selectedEdges,
+      vertexData filterKeys vp,
+      edgeData filterKeys selectedEdges
+    )
+    // assert(subGraph subGraphOf this)
+    subGraph
+  }
 
   def filterEdges(ep: (E) => Boolean): DirectedGraphData[V, VD, ED] = {
     copy(
