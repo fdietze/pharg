@@ -1,6 +1,6 @@
 organization in ThisBuild := "com.github.fdietze"
 name in ThisBuild := "pharg"
-version in ThisBuild := "0.1.0-SNAPSHOT"
+version in ThisBuild := "0.1.0"
 
 scalaVersion in ThisBuild := "2.12.1"
 
@@ -48,3 +48,30 @@ lazy val pharg = (crossProject.crossType(CrossType.Pure) in file("."))
 
 lazy val phargJVM = pharg.jvm
 lazy val phargJS = pharg.js
+
+pgpSecretRing in Global := file("secring.gpg")
+pgpPublicRing in Global := file("pubring.gpg")
+pgpPassphrase in Global := Some("".toCharArray)
+
+organization in Global := "com.github.fdietze"
+
+pomExtra in Global := {
+  <url>https://github.com/fdietze/pharg</url>
+  <licenses>
+    <license>
+      <name>Apache 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <scm>
+    <url>https://github.com/fdietze/pharg</url>
+    <connection>scm:git:git@github.com:fdietze/pharg.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>fdietze</id>
+      <name>Felix Dietze</name>
+      <url>https://github.com/fdietze</url>
+    </developer>
+  </developers>
+}
