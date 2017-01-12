@@ -161,18 +161,18 @@ trait DirectedGraphLike[V] {
   //TODO: rename? undirected case with n*(n-1)/2?
   def isComplete = m == n * (n - 1)
 
-  def connectedComponents: Set[Set[V]] = connectedComponents(neighbours)
-  def stronglyConnectedComponents: Set[Set[V]] = connectedComponents(successors)
-  def connectedComponents(continue: V => Iterable[V]): Set[Set[V]] = {
-    val toVisit = mutable.HashSet.empty ++ vertices
-    val components = mutable.HashSet.empty[Set[V]]
+  def connectedComponents: Seq[Seq[V]] = connectedComponents(neighbours)
+  def stronglyConnectedComponents: Seq[Seq[V]] = connectedComponents(successors)
+  def connectedComponents(continue: V => Iterable[V]): Seq[Seq[V]] = {
+    val toVisit = mutable.ArrayBuffer.empty ++ vertices
+    val components = mutable.ArrayBuffer.empty[Seq[V]]
     while (toVisit.nonEmpty) {
       val start = toVisit.head
-      val component = depthFirstSearch(start, continue).toSet
+      val component = depthFirstSearch(start, continue).toSeq
       components += component
       toVisit --= component
     }
-    components.toSet
+    components
   }
 
   //TODO: optimization: isComplete || depthFirst...

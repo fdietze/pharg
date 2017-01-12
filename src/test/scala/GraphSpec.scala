@@ -474,9 +474,9 @@ class GraphSpec extends org.specs2.mutable.Specification {
     }
 
     "connected components" >> {
-      G(V(0, 1, 2), E(0 -> 1, 1 -> 2)).connectedComponents mustEqual Set(V(0, 1, 2))
-      G(V(0, 1, 2), E(0 -> 1)).connectedComponents mustEqual Set(V(0, 1), V(2))
-      G(V(0 to 5), E(1 -> 2, 2 -> 1, 3 -> 5, 4 -> 5)).connectedComponents mustEqual Set(V(0), V(1, 2), V(3, 4, 5))
+      G(V(0, 1, 2), E(0 -> 1, 1 -> 2)).connectedComponents mustEqual Seq(V(0, 1, 2).toSeq)
+      G(V(0, 1, 2), E(0 -> 1)).connectedComponents mustEqual Seq(V(0, 1).toSeq, V(2).toSeq)
+      G(V(0 to 5), E(1 -> 2, 2 -> 1, 3 -> 5, 4 -> 5)).connectedComponents mustEqual Seq(V(0).toSeq, V(1, 2).toSeq, V(3, 5, 4).toSeq)
     }
 
     "graph isomorphism" >> {
