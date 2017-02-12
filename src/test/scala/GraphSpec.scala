@@ -467,7 +467,7 @@ class GraphSpec extends org.specs2.mutable.Specification {
       G(V(), E()).topologicalSort mustEqual List()
       G(V(1), E()).topologicalSort mustEqual List(1)
       G(V(1, 2), E(1 -> 2)).topologicalSort mustEqual List(1, 2)
-      // G(V(1, 2), E(1 -> 2, 2 -> 1)).topologicalSort must throwAn[AssertionError]
+      G(V(0, 1, 2, 3), E(0 -> 1, 1 -> 2, 2 -> 1, 2 -> 3)).topologicalSort must beOneOf(List(0, 1, 2, 3), List(0, 2, 1, 3))
       G(V(1, 2, 3), E(2 -> 3, 1 -> 2)).topologicalSort mustEqual List(1, 2, 3)
       val s = G(V(1, 2, 3, 4, 5), E(1 -> 3, 2 -> 3, 3 -> 4, 3 -> 5)).topologicalSort
       List(s.slice(0, 2).toSet, s(2), s.slice(3, 5).toSet) mustEqual List(V(1, 2), 3, V(4, 5))
